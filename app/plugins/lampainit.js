@@ -62,6 +62,21 @@
 
       Lampa.Utils.putScriptAsync(["{localhost}/cubproxy.js", "{localhost}/privateinit.js?account_email=" + encodeURIComponent(Lampa.Storage.get('account_email', '')) + "&uid=" + encodeURIComponent(Lampa.Storage.get('lampac_unic_id', ''))], function() {});
 
+      // ── Suppress CUB account popups ────────────────────────
+      // Users authenticate via Telegram bot, not CUB.  Override
+      // Account.Modal.account/premium/limited so the full-screen
+      // "Еще нет аккаунта?" modal never blocks the UI.
+      if (Lampa.Account && Lampa.Account.Modal) {
+        Lampa.Account.Modal.account  = function () {};
+        Lampa.Account.Modal.premium  = function () {};
+        Lampa.Account.Modal.limited  = function () {};
+      }
+      if (Lampa.Account) {
+        Lampa.Account.showNoAccount      = function () {};
+        Lampa.Account.showCubPremium     = function () {};
+        Lampa.Account.showLimitedAccount = function () {};
+      }
+
       if (window.appready) {
         start();
       }

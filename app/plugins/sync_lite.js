@@ -23,7 +23,7 @@
     return url;
   }
 
-  
+
   function rchtypeInvoke(call) {
     if (rchtype == undefined) {
       var check = function check(good) {
@@ -68,7 +68,7 @@
       success: function(j) {
         if (j.success && j.fileInfo) {
           localStorage.setItem('lampac_' + path, j.fileInfo.changeTime);
-		  
+
           if (hubConnection)
             hubConnection.invoke("events", suid, 'sync', path);
         }
@@ -105,69 +105,79 @@
   });
 
   function waitEvent() {
-    hubConnection = new signalR.HubConnectionBuilder().withUrl('{localhost}/ws').build();
+    var wsUrl = '{localhost}/nws'.replace(/^http/, 'ws');
 
-    function tryConnect() {
-      hubConnection.start().then(function() {
-        hubConnection.invoke("RegistryEvent", suid).then(function() {
-          hubConnection.on("event", function(uid, name, data) {
-            if (name === 'sync') {
-              goImport(data);
-            }
-          });
+    hubConnection = new NativeWsClient(wsUrl, {
+      autoReconnect: true,
+      reconnectDelay: 5000,
+      onOpen: function() {
+        hubConnection.invoke("RegistryEvent", suid);
+        rchtypeInvoke(function() {
+          hubConnection.invoke("RchRegistry", JSON.stringify({version: 138, host: location.host, rchtype: rchtype}));
         });
-		rchtypeInvoke(function() {
-			hubConnection.invoke("RchRegistry", JSON.stringify({version: 138, host: location.host, rchtype: rchtype})).then(function() {
-			  hubConnection.on("RchClient", function(rchId, url, data, headers, returnHeaders) {
-				function result(html) {
-				  if (Lampa.Arrays.isObject(html) || Lampa.Arrays.isArray(html)) html = JSON.stringify(html);
-				  network.silent('{localhost}/rch/result', false, false, {
-					id: rchId,
-					value: html
-				  }, {
-					dataType: 'text',
-					timeout: 1000 * 5
-				  });
-				}
-				if (url == 'eval')
-				  result(eval(data));
-				else {
-				  network["native"](url, result, function() {
-					result('');
-				  }, data, {
-					dataType: 'text',
-					timeout: 1000 * 5,
-					headers: headers,
-					returnHeaders: returnHeaders
-				  });
+      },
+      onClose: function() {
+        goImport('sync_favorite');
+        goImport('sync_view');
+      }
+    });
 
-				}
-			  });
-			});
-		});
-        hubConnection.onclose(function() {
-          waitEvent();
-        });
-      }).catch(function(err) {
-        setTimeout(function() {
-          if(hubConnection.state !== 'Connected') {
-			goImport('sync_favorite');
-			goImport('sync_view');
-			tryConnect();
+    hubConnection.on("event", function(uid, name, data) {
+      if (name === 'sync') {
+        goImport(data);
+      } else if (name === 'alice:open') {
+        try {
+          var card = typeof data === 'string' ? JSON.parse(data) : data;
+          if (card && card.card && card.card.id) {
+            Lampa.Activity.push({
+              url: '',
+              title: card.card.title || 'Алиса',
+              component: 'full',
+              id: card.card.id,
+              source: card.card.source || 'KP',
+              card: card.card
+            });
           }
-        }, 5000);
-      });
-    }
+        } catch(e) {
+          console.log('Lampac', 'alice:open error', e);
+        }
+      }
+    });
 
-    tryConnect();
+    hubConnection.on("RchClient", function(rchId, url, data, headers, returnHeaders) {
+      function result(html) {
+        if (Lampa.Arrays.isObject(html) || Lampa.Arrays.isArray(html)) html = JSON.stringify(html);
+        network.silent('{localhost}/rch/result', false, false, {
+          id: rchId,
+          value: html
+        }, {
+          dataType: 'text',
+          timeout: 1000 * 5
+        });
+      }
+      if (url == 'eval')
+        result(eval(data));
+      else {
+        network["native"](url, result, function() {
+          result('');
+        }, data, {
+          dataType: 'text',
+          timeout: 1000 * 5,
+          headers: headers,
+          returnHeaders: returnHeaders
+        });
+      }
+    });
+
+    hubConnection.connect();
   }
 
 
   network.silent(account('{localhost}/reqinfo'), function(j) {
     if (j.user_uid) {
       suid = j.user_uid;
-      if (typeof signalR == 'undefined') {
-        Lampa.Utils.putScript(["{localhost}/signalr-6.0.25_es5.js"], function() {
+      if (typeof NativeWsClient == 'undefined') {
+        Lampa.Utils.putScript(["{localhost}/nws-client-es5.js"], function() {
           waitEvent();
         });
       } else waitEvent();

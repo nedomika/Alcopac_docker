@@ -74,6 +74,42 @@
       sendEvent('system', 'connected');
     });
     nwsClient.on("event", function(uid, name, data) {
+      if (name === 'alice:open') {
+        try {
+          var card = typeof data === 'string' ? JSON.parse(data) : data;
+          if (card && card.card && card.card.id) {
+            var mt = card.card.type || card.card.media_type || 'movie';
+            card.card.method = mt;
+            Lampa.Activity.push({
+              url: '',
+              title: 'Онлайн - ' + (card.card.title || 'Алиса'),
+              component: 'lampac',
+              search: card.card.title,
+              search_one: card.card.title,
+              movie: card.card,
+              page: 1
+            });
+            // Auto-play: poll for first rendered video item and trigger it
+            var _apN = 0;
+            var _apT = setInterval(function() {
+              _apN++;
+              if (_apN > 40) { clearInterval(_apT); return; }
+              try {
+                var act = Lampa.Activity.active();
+                if (act && act.activity) {
+                  var el = act.activity.render().find('.online-prestige--full');
+                  if (el.length) {
+                    clearInterval(_apT);
+                    setTimeout(function() { el.first().trigger('hover:enter'); }, 300);
+                  }
+                }
+              } catch(ex) {}
+            }, 500);
+          }
+        } catch(e) {
+          console.log('Lampac', 'alice:open error', e);
+        }
+      }
       sendEvent(name, data);
     });
     nwsClient.connect();

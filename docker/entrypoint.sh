@@ -16,16 +16,9 @@ mkdir -p \
   "$APP_DIR/database/sisi/history" \
   "$APP_DIR/database/tgauth" \
   "$APP_DIR/data" \
-  "$APP_DIR/module" \
   "$APP_DIR/torrserver"
 
 # ── заполняем пустые volumes из _defaults ──
-# module (manifest.json, JacRed.conf)
-if [ -d "$DEFAULTS_DIR/module" ] && [ -z "$(ls -A "$APP_DIR/module" 2>/dev/null)" ]; then
-  echo "[entrypoint] Инициализация module/ из defaults..."
-  cp -a "$DEFAULTS_DIR/module/." "$APP_DIR/module/"
-fi
-
 # torrserver (accs.db и т.д.)
 if [ -d "$DEFAULTS_DIR/torrserver" ] && [ -z "$(ls -A "$APP_DIR/torrserver" 2>/dev/null)" ]; then
   echo "[entrypoint] Инициализация torrserver/ из defaults..."
@@ -40,6 +33,13 @@ if [ -x "$DEFAULTS_DIR/torrserver/TorrServer-linux" ]; then
     cp "$DEFAULTS_DIR/torrserver/TorrServer-linux" "$APP_DIR/torrserver/TorrServer-linux"
     chmod 0755 "$APP_DIR/torrserver/TorrServer-linux"
   fi
+fi
+
+# custom plugins (user-uploaded via admin panel)
+mkdir -p "$APP_DIR/plugins/custom"
+if [ -d "$DEFAULTS_DIR/plugins/custom" ] && [ -z "$(ls -A "$APP_DIR/plugins/custom" 2>/dev/null)" ]; then
+  echo "[entrypoint] Инициализация plugins/custom/ из defaults..."
+  cp -a "$DEFAULTS_DIR/plugins/custom/." "$APP_DIR/plugins/custom/"
 fi
 
 # ── конфигурация ──

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: alcopac:0.2
+    image: alcopac:0.2b
     container_name: alcopac
     restart: unless-stopped
     env_file:
@@ -25,7 +25,7 @@ services:
       - ./cache:/opt/lampac/cache
       # ---------- torrserver (accs.db) ----------
       - ./torrserver:/opt/lampac/torrserver
-      # ---------- module (manifest.json, JacRed.conf — редактируются через админку) ----------
-      - ./module:/opt/lampac/module
       # ---------- data (veoveo и др.) ----------
       - ./data:/opt/lampac/data
+      # ---------- пользовательские плагины (загруженные через админку) ----------
+      - ./plugins_custom:/opt/lampac/plugins/custom
