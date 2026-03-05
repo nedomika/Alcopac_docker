@@ -1545,7 +1545,7 @@
     "stream_access": "apk,cors,web",
     "streamproxy": true,
     "streamproxy_preview": false,
-    "token": "5e2fe4c70bafd9a7414c4f170ee1b192",
+    "token": "",
     "url_reserve": false,
     "useproxy": false,
     "useproxystream": false,

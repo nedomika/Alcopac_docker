@@ -249,7 +249,6 @@ do_install() {
     "$ROOT_DIR/cache" \
     "$ROOT_DIR/database" \
     "$ROOT_DIR/data" \
-    "$ROOT_DIR/module" \
     "$ROOT_DIR/torrserver"
 
   log "Директории созданы"
@@ -378,9 +377,9 @@ do_install() {
   [ -f "$ROOT_DIR/torrserver/accs.db" ] && chmod 0600 "$ROOT_DIR/torrserver/accs.db"
 
   chmod 0755 "$ROOT_DIR/config" "$ROOT_DIR/cache" "$ROOT_DIR/database" \
-             "$ROOT_DIR/data" "$ROOT_DIR/module" "$ROOT_DIR/torrserver"
+             "$ROOT_DIR/data" "$ROOT_DIR/torrserver"
 
-  for d in wwwroot plugins module; do
+  for d in wwwroot plugins; do
     [ -d "$ROOT_DIR/app/$d" ] && {
       find "$ROOT_DIR/app/$d" -type d -exec chmod 0755 {} \;
       find "$ROOT_DIR/app/$d" -type f -exec chmod 0644 {} \;
@@ -462,7 +461,6 @@ do_install() {
   echo -e "    database/    — закладки, таймкоды, storage, tgauth"
   echo -e "    cache/       — AES-ключ, кэш изображений"
   echo -e "    torrserver/  — TorrServer данные (accs.db)"
-  echo -e "    module/      — manifest, JacRed"
   echo -e "    data/        — дополнительные данные"
   echo ""
 }
@@ -709,14 +707,13 @@ do_remove() {
   if [ "$PURGE_DATA" = "true" ]; then
     info "Удаляю данные..."
     rm -rf "$ROOT_DIR/database" "$ROOT_DIR/cache" "$ROOT_DIR/config" \
-           "$ROOT_DIR/data" "$ROOT_DIR/module" "$ROOT_DIR/torrserver"
+           "$ROOT_DIR/data" "$ROOT_DIR/torrserver"
     log "Данные удалены"
   else
     info "Данные сохранены в:"
     echo -e "    ${DIM}config/     — конфигурация${NC}"
     echo -e "    ${DIM}database/   — закладки, таймкоды, авторизация${NC}"
     echo -e "    ${DIM}cache/      — AES-ключ, кэш${NC}"
-    echo -e "    ${DIM}module/     — manifest, JacRed${NC}"
     echo -e "    ${DIM}torrserver/ — TorrServer данные${NC}"
   fi
 

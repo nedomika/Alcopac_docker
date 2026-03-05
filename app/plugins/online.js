@@ -634,6 +634,10 @@
               if (first.url) {
                 var element = first;
 				element.isonline = true;
+                if (filter_find.voice && filter_find.voice.length > 1) {
+                  element.voices = filter_find.voice;
+                  element.voice_index = _this5.getChoice(balanser).voice || 0;
+                }
                 {player-inner}
                 Lampa.Player.play(element);
                 Lampa.Player.playlist(playlist);

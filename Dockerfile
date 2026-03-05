@@ -57,7 +57,6 @@ RUN set -eux; \
 
 # ── defaults: файлы, которые volume может перекрыть ──
 # При первом запуске entrypoint.sh скопирует их в пустые volumes
-COPY app/module   /opt/lampac/_defaults/module
 COPY app/plugins  /opt/lampac/_defaults/plugins
 COPY app/wwwroot  /opt/lampac/_defaults/wwwroot
 COPY app/torrserver /opt/lampac/_defaults/torrserver
@@ -79,7 +78,6 @@ RUN mkdir -p /opt/lampac/config \
              /opt/lampac/cache \
              /opt/lampac/database \
              /opt/lampac/data \
-             /opt/lampac/module \
              /opt/lampac/torrserver
 
 ENV LAMPAC_GO_ADDR=0.0.0.0:18118 \

@@ -265,6 +265,13 @@ hls = true
 host = 'https://rezka-ua.tv/'
 premium = false
 
+[online.rhsprem]
+enable = false
+enabled = false
+hls = true
+host = 'https://rezka-ua.tv/'
+premium = true
+
 [online.rgshows]
 enable = true
 enabled = true

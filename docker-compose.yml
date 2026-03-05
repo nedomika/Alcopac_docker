@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: alcopac:0.2b
+    image: alcopac:0.2c
     container_name: alcopac
     restart: unless-stopped
     env_file:

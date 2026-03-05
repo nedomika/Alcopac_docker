@@ -702,6 +702,27 @@
       '  background: transparent !important;' +
       '}',
 
+      // ─── Online prestige: progress bar & viewed badge ────
+      // Timeline track — subtle glass background so length is visible
+      'body.appletv--theme .online-prestige__timeline .time-line {' +
+      '  background: rgba(255,255,255,0.08) !important;' +
+      '  border-radius: 0.25em; overflow: hidden;' +
+      '  border: 1px solid rgba(255,255,255,0.06);' +
+      '}',
+      // Progress bar fill — bright, visible on dark
+      'body.appletv--theme .online-prestige__timeline .time-line > div {' +
+      '  background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0.7)) !important;' +
+      '  border-radius: 0.25em;' +
+      '  box-shadow: 0 0 6px rgba(255,255,255,0.15);' +
+      '}',
+      // Viewed badge — glass effect, visible on dark images
+      'body.appletv--theme .online-prestige__viewed {' +
+      '  background: rgba(255,255,255,0.15) !important;' +
+      '  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);' +
+      '  border: 1px solid rgba(255,255,255,0.2);' +
+      '  box-shadow: 0 2px 8px rgba(0,0,0,0.4);' +
+      '}',
+
     ].join('\n'),
   };
 
