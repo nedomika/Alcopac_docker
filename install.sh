@@ -163,20 +163,29 @@ self_update() {
 
   if [ -d ".git" ]; then
     info "Проверяю обновления..."
-    local old_head new_head
+    local old_head new_head is_dirty
     old_head="$(git rev-parse HEAD 2>/dev/null || echo "none")"
 
     git fetch --quiet origin 2>/dev/null || { warn "git fetch не удался — используем текущие файлы"; return 0; }
     new_head="$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null || echo "none")"
 
-    if [ "$old_head" = "$new_head" ]; then
+    # Проверяем и dirty working tree (изменённые бинарники и т.п.)
+    is_dirty="false"
+    git diff --quiet HEAD 2>/dev/null || is_dirty="true"
+
+    if [ "$old_head" = "$new_head" ] && [ "$is_dirty" = "false" ]; then
       log "Файлы актуальны"
       return 0
     fi
 
     info "Обновляю файлы..."
     git reset --hard "$new_head" 2>/dev/null || { warn "git reset не удался"; return 0; }
-    log "Обновлено до $(echo "$new_head" | head -c 8)"
+    git clean -fd 2>/dev/null || true
+    if [ "$old_head" = "$new_head" ]; then
+      log "Локальные изменения сброшены"
+    else
+      log "Обновлено до $(echo "$new_head" | head -c 8)"
+    fi
   else
     info "Инициализирую git-репозиторий для автообновлений..."
 
