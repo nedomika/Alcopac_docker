@@ -6,6 +6,11 @@
     window.alcopac_onjs = true;
     window.alcopac = true;
 
+    // Disable LGBT content filter (Lampa beta feature) — prevents lgbt.forEach crash
+    if (!window.lampa_settings) window.lampa_settings = {};
+    if (!window.lampa_settings.disable_features) window.lampa_settings.disable_features = {};
+    window.lampa_settings.disable_features.lgbt = true;
+
     var timer = setInterval(function(){
         if(typeof Lampa !== 'undefined'){
             clearInterval(timer);
